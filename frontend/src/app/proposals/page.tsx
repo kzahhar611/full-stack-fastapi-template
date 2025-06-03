@@ -1,14 +1,191 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import { useQuery } from 'react-query'
+import { useRouter } from 'next/navigation'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import Table from '@/components/common/Table'
 import Button from '@/components/common/Button'
+import Input from '@/components/common/Input'
+import Select from '@/components/common/Select'
+import Badge from '@/components/common/Badge'
+import { proposalService } from '@/services/proposal'
+import { ProposalListItem, ProposalStatus, ProposalFilters } from '@/types/proposal'
 import { 
-  PlusIcon,
-  DocumentTextIcon
+  PlusIcon, 
+  MagnifyingGlassIcon,
+  EyeIcon,
+  PencilIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon
 } from '@heroicons/react/24/outline'
 
 const ProposalsPage: React.FC = () => {
+  const router = useRouter()
+  const [filters, setFilters] = useState<ProposalFilters>({
+    search: '',
+    status: undefined,
+    my_proposals: false,
+    order_by: 'created_at',
+    order_direction: 'desc'
+  })
+
+  // Fetch proposals with filters
+  const { data: proposals, isLoading, refetch } = useQuery(
+    ['proposals', filters],
+    () => proposalService.getProposals(filters),
+    {
+      staleTime: 30000, // 30 seconds
+    }
+  )
+
+  const statusOptions = [
+    { value: '', label: 'All Statuses' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'under_review', label: 'Under Review' },
+    { value: 'submitted', label: 'Submitted' },
+    { value: 'accepted', label: 'Accepted' },
+    { value: 'rejected', label: 'Rejected' },
+    { value: 'withdrawn', label: 'Withdrawn' },
+  ]
+
+  const getStatusVariant = (status: ProposalStatus) => {
+    switch (status) {
+      case 'submitted': return 'info'
+      case 'draft': return 'warning'
+      case 'in_progress': return 'info'
+      case 'under_review': return 'info'
+      case 'accepted': return 'success'
+      case 'rejected': return 'error'
+      case 'withdrawn': return 'default'
+      default: return 'default'
+    }
+  }
+
+  const columns = [
+    {
+      key: 'title' as keyof ProposalListItem,
+      header: 'Proposal',
+      render: (value: string, item: ProposalListItem) => (
+        <div>
+          <div className="font-medium text-gray-900">{value}</div>
+          <div className="text-sm text-gray-500">{item.proposal_number}</div>
+        </div>
+      ),
+      width: '25%'
+    },
+    {
+      key: 'rfp_title' as keyof ProposalListItem,
+      header: 'RFP',
+      render: (value: string, item: ProposalListItem) => (
+        <div>
+          <div className="font-medium text-gray-900">{value || 'N/A'}</div>
+          <div className="text-sm text-gray-500">{item.rfp_number || ''}</div>
+          {item.rfp_organization && (
+            <div className="text-xs text-gray-400">{item.rfp_organization}</div>
+          )}
+        </div>
+      ),
+      width: '25%'
+    },
+    {
+      key: 'status' as keyof ProposalListItem,
+      header: 'Status',
+      render: (value: ProposalStatus) => (
+        <Badge variant={getStatusVariant(value)} size="sm">
+          {value.replace('_', ' ').toUpperCase()}
+        </Badge>
+      ),
+      width: '12%'
+    },
+    {
+      key: 'total_cost' as keyof ProposalListItem,
+      header: 'Total Cost',
+      render: (value: number, item: ProposalListItem) => {
+        if (!value) return '-'
+        return (
+          <div className="flex items-center">
+            <CurrencyDollarIcon className="h-4 w-4 text-gray-400 mr-1" />
+            {item.currency} {value.toLocaleString()}
+          </div>
+        )
+      },
+      width: '15%'
+    },
+    {
+      key: 'compliance_score' as keyof ProposalListItem,
+      header: 'Compliance',
+      render: (value: number) => {
+        if (!value) return '-'
+        return (
+          <div className="flex items-center">
+            <div className="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+              <div 
+                className="bg-primary-600 h-2 rounded-full" 
+                style={{ width: `${value}%` }}
+              />
+            </div>
+            <span className="text-sm text-gray-600">{value}%</span>
+          </div>
+        )
+      },
+      width: '15%'
+    },
+    {
+      key: 'created_at' as keyof ProposalListItem,
+      header: 'Created',
+      render: (value: string) => new Date(value).toLocaleDateString(),
+      width: '10%'
+    },
+    {
+      key: 'id' as keyof ProposalListItem,
+      header: 'Actions',
+      render: (_: any, item: ProposalListItem) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/proposals/${item.id}`)
+            }}
+            leftIcon={<EyeIcon className="h-4 w-4" />}
+          >
+            View
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/proposals/${item.id}/edit`)
+            }}
+            leftIcon={<PencilIcon className="h-4 w-4" />}
+          >
+            Edit
+          </Button>
+        </div>
+      ),
+      width: '15%'
+    }
+  ]
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters(prev => ({ ...prev, search: e.target.value }))
+  }
+
+  const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilters(prev => ({ 
+      ...prev, 
+      status: e.target.value as ProposalStatus || undefined 
+    }))
+  }
+
+  const toggleMyProposals = () => {
+    setFilters(prev => ({ ...prev, my_proposals: !prev.my_proposals }))
+  }
+
   return (
     <DashboardLayout>
       <div className="px-4 sm:px-6 lg:px-8">
@@ -22,50 +199,69 @@ const ProposalsPage: React.FC = () => {
           </div>
           <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
             <Button
+              onClick={() => router.push('/proposals/create')}
               leftIcon={<PlusIcon className="h-5 w-5" />}
-              disabled
             >
               Create Proposal
             </Button>
           </div>
         </div>
 
-        {/* Coming Soon Message */}
-        <div className="mt-8 text-center py-12">
-          <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Proposal Management Coming Soon</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            This feature will be available in Phase 4 of the development process.
-          </p>
-          <p className="mt-2 text-xs text-gray-400">
-            Features planned: Proposal creation, submission tracking, evaluation, and AI-powered analysis.
-          </p>
+        {/* Filters */}
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Input
+            placeholder="Search proposals..."
+            value={filters.search}
+            onChange={handleSearch}
+            leftIcon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          />
+          
+          <Select
+            placeholder="Filter by status"
+            options={statusOptions}
+            value={filters.status || ''}
+            onChange={handleStatusFilter}
+          />
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="my-proposals"
+              checked={filters.my_proposals}
+              onChange={toggleMyProposals}
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            />
+            <label htmlFor="my-proposals" className="ml-2 block text-sm text-gray-900">
+              My proposals only
+            </label>
+          </div>
+
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            className="justify-center"
+          >
+            Refresh
+          </Button>
         </div>
 
-        {/* Feature Preview */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-4">Planned Features</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-medium text-blue-800">Proposal Creation</h4>
-              <ul className="mt-2 text-sm text-blue-700 space-y-1">
-                <li>• Response to RFP requirements</li>
-                <li>• Technical approach documentation</li>
-                <li>• Cost breakdown and timeline</li>
-                <li>• Document attachments</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-blue-800">Management & Tracking</h4>
-              <ul className="mt-2 text-sm text-blue-700 space-y-1">
-                <li>• Submission status tracking</li>
-                <li>• Evaluation scoring</li>
-                <li>• AI-powered analysis</li>
-                <li>• Compliance verification</li>
-              </ul>
-            </div>
-          </div>
+        {/* Table */}
+        <div className="mt-8">
+          <Table
+            data={proposals || []}
+            columns={columns}
+            loading={isLoading}
+            emptyMessage="No proposals found. Create your first proposal to get started."
+            onRowClick={(item) => router.push(`/proposals/${item.id}`)}
+          />
         </div>
+
+        {/* Stats */}
+        {proposals && proposals.length > 0 && (
+          <div className="mt-6 text-sm text-gray-500">
+            Showing {proposals.length} proposal{proposals.length !== 1 ? 's' : ''}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   )

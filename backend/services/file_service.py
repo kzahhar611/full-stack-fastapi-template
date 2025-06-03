@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from core.config import settings
 from models.rfp import RFPDocument
+from models.proposal import ProposalDocument
 from models.user import User
 
 class FileService:
@@ -168,3 +169,82 @@ class FileService:
     def get_document_by_id(db: Session, document_id: int) -> Optional[RFPDocument]:
         """Get document by ID"""
         return db.query(RFPDocument).filter(RFPDocument.id == document_id).first()
+
+    # Proposal Document Methods
+    
+    @staticmethod
+    async def upload_proposal_document(
+        db: Session,
+        proposal_id: int,
+        file: UploadFile,
+        uploaded_by: int,
+        document_type: Optional[str] = None
+    ) -> ProposalDocument:
+        """Upload document for Proposal"""
+        # Validate file
+        if not FileService.validate_file(file):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file type or size too large"
+            )
+        
+        # Generate file path for proposals
+        base_path = os.path.join(settings.UPLOAD_FOLDER, "proposal_documents")
+        os.makedirs(base_path, exist_ok=True)
+        
+        filename = f"{uuid.uuid4().hex}.{file.filename.split('.')[-1]}" if file.filename else f"{uuid.uuid4().hex}.bin"
+        file_path = os.path.join(base_path, filename)
+        
+        # Save file
+        file_size = await FileService.save_file(file, file_path)
+        
+        # Create database record
+        document = ProposalDocument(
+            proposal_id=proposal_id,
+            filename=filename,
+            original_filename=file.filename or "document",
+            file_path=file_path,
+            file_size=file_size,
+            content_type=file.content_type or "application/octet-stream",
+            document_type=document_type,
+            processing_status="uploaded",
+            uploaded_by=uploaded_by,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+        
+        return document
+
+    @staticmethod
+    def get_proposal_documents(db: Session, proposal_id: int) -> List[ProposalDocument]:
+        """Get all documents for a proposal"""
+        return db.query(ProposalDocument).filter(ProposalDocument.proposal_id == proposal_id).all()
+
+    @staticmethod
+    def delete_proposal_document(db: Session, proposal_id: int, document_id: int) -> bool:
+        """Delete proposal document"""
+        document = db.query(ProposalDocument).filter(
+            ProposalDocument.id == document_id,
+            ProposalDocument.proposal_id == proposal_id
+        ).first()
+        
+        if not document:
+            return False
+        
+        # Delete file from disk
+        FileService.delete_file(document.file_path)
+        
+        # Delete database record
+        db.delete(document)
+        db.commit()
+        
+        return True
+
+    @staticmethod
+    def get_proposal_document_by_id(db: Session, document_id: int) -> Optional[ProposalDocument]:
+        """Get proposal document by ID"""
+        return db.query(ProposalDocument).filter(ProposalDocument.id == document_id).first()
