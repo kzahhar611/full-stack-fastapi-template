@@ -16,6 +16,7 @@ from datetime import datetime
 from .core.config import settings
 from .core.database_enhanced import init_enhanced_db
 from .api.v1.api import api_router
+from .services.ai.ai_config import ai_config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,6 +44,14 @@ async def lifespan(app: FastAPI):
     # Initialize enhanced database with tables and admin user
     init_enhanced_db()
     logger.info("Enhanced database initialized with admin user")
+    
+    # Initialize AI services
+    try:
+        ai_status = ai_config.initialize_ai_services()
+        logger.info(f"AI services initialized: {ai_status}")
+    except Exception as e:
+        logger.warning(f"AI services initialization failed (using mock providers): {str(e)}")
+        ai_config.initialize_ai_services(force_mock=True)
     
     yield
     

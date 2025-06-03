@@ -13,6 +13,9 @@ from .rfp_enhanced import router as rfp_enhanced_router
 from .rfp_documents import router as rfp_documents_router
 from .rfp_templates import router as rfp_templates_router
 
+# Release 7: AI Services
+from .ai_services import router as ai_services_router
+
 api_router = APIRouter()
 
 # Include original authentication and basic routes (backward compatibility)
@@ -24,6 +27,9 @@ api_router.include_router(rfps_router, prefix="/rfps", tags=["rfps"])  # Origina
 api_router.include_router(rfp_enhanced_router, prefix="/rfps-enhanced", tags=["rfps-enhanced"])
 api_router.include_router(rfp_documents_router, prefix="/rfps-enhanced", tags=["rfp-documents"])
 api_router.include_router(rfp_templates_router, prefix="/rfp-templates", tags=["rfp-templates"])
+
+# Release 7: AI Services endpoints
+api_router.include_router(ai_services_router, prefix="/ai", tags=["ai-services"])
 
 # TODO: Add other routers for future releases
 # api_router.include_router(users_router, prefix="/users", tags=["users"])

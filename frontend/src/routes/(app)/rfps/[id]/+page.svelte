@@ -6,6 +6,8 @@
 	import { fade } from 'svelte/transition';
 	import { authStore } from '$lib/stores/auth';
 	import type { RFPEnhanced } from '$lib/types/rfp';
+	import AIChatInterface from '$lib/components/ai/AIChatInterface.svelte';
+	import AIInsights from '$lib/components/ai/AIInsights.svelte';
 
 	let rfpId: number;
 	let rfp: RFPEnhanced | null = null;
@@ -216,6 +218,16 @@
 						</a>
 						<button
 							class={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+								activeTab === 'ai'
+									? 'border-blue-500 text-blue-400'
+									: 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+							} flex items-center gap-2`}
+							on:click={() => activeTab = 'ai'}
+						>
+							🤖 AI Assistant
+						</button>
+						<button
+							class={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
 								activeTab === 'timeline'
 									? 'border-blue-500 text-blue-400'
 									: 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
@@ -408,6 +420,30 @@
 							No content available
 						</div>
 					{/if}
+				</div>
+
+			{:else if activeTab === 'ai'}
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-8" transition:fade={{ duration: 300 }}>
+					<!-- AI Insights -->
+					<div>
+						<AIInsights 
+							rfpId={rfpId} 
+							showUsageStats={$authStore.user?.role && ['super_admin', 'admin'].includes($authStore.user.role)}
+						/>
+					</div>
+
+					<!-- AI Chat -->
+					<div class="bg-gray-900 rounded-lg border border-gray-700 h-[600px]">
+						<AIChatInterface 
+							rfpId={rfpId}
+							context={{
+								rfp_title: rfp.title,
+								rfp_status: rfp.status,
+								rfp_category: rfp.category
+							}}
+							placeholder="Ask me about this RFP..."
+						/>
+					</div>
 				</div>
 
 			{:else if activeTab === 'timeline'}
