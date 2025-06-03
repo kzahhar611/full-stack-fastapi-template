@@ -171,6 +171,7 @@ class Settings(BaseSettings):
     # =============================================================================
     STORAGE_TYPE: str = Field(default="local", env="STORAGE_TYPE")  # local, s3, azure, gcp
     UPLOAD_FOLDER: str = Field(default="./uploads", env="UPLOAD_FOLDER")
+    UPLOAD_DIR: str = Field(default="./uploads", env="UPLOAD_DIR")  # Alias for UPLOAD_FOLDER
     MAX_FILE_SIZE_MB: int = Field(default=100, env="MAX_FILE_SIZE_MB")
     ALLOWED_FILE_TYPES: List[str] = Field(
         default=["pdf", "docx", "pptx", "txt", "md"],

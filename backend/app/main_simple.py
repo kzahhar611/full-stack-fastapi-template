@@ -14,8 +14,8 @@ from uuid import UUID
 from datetime import datetime
 
 from .core.config import settings
-from .core.database_simple import init_db
-from .api.v1.api_simple import api_router
+from .core.database_enhanced import init_enhanced_db
+from .api.v1.api import api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,9 +40,9 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting TenderWise AI application...")
     
-    # Initialize database with tables and admin user
-    init_db()
-    logger.info("Database initialized with admin user")
+    # Initialize enhanced database with tables and admin user
+    init_enhanced_db()
+    logger.info("Enhanced database initialized with admin user")
     
     yield
     
