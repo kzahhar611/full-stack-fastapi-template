@@ -1,0 +1,180 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16
+    container_name: tenderwise-postgres
+    environment:
+      POSTGRES_DB: tenderwise_ai
+      POSTGRES_USER: tenderwise
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tenderwise-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tenderwise -d tenderwise_ai"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: tenderwise-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tenderwise-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend FastAPI Application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: tenderwise-backend
+    environment:
+      - DATABASE_URL=postgresql://tenderwise:password@postgres:5432/tenderwise_ai
+      - REDIS_URL=redis://redis:6379/0
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=INFO
+      - FRONTEND_URL=http://localhost:5173
+      - BACKEND_URL=http://localhost:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tenderwise-network
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Svelte Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: tenderwise-frontend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_WS_URL=ws://localhost:8000
+      - NODE_ENV=development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - tenderwise-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # Celery Worker (for background tasks)
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: tenderwise-celery-worker
+    environment:
+      - DATABASE_URL=postgresql://tenderwise:password@postgres:5432/tenderwise_ai
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - ENVIRONMENT=development
+    volumes:
+      - ./backend:/app
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tenderwise-network
+    restart: unless-stopped
+    command: celery -A app.core.celery worker --loglevel=info
+
+  # Celery Flower (monitoring)
+  celery-flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: tenderwise-celery-flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery-worker
+    networks:
+      - tenderwise-network
+    restart: unless-stopped
+    command: celery -A app.core.celery flower --port=5555
+
+  # Mailhog (development email server)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: tenderwise-mailhog
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI port
+    networks:
+      - tenderwise-network
+
+  # Nginx (development proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: tenderwise-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/development/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - tenderwise-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  tenderwise-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

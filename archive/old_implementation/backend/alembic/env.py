@@ -1,23 +1,30 @@
-from logging.config import fileConfig
 import os
 import sys
+from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
 
-# Add the parent directory to the path so we can import our app
+# Add the backend directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.core.config import settings
-from app.models.base import Base
+# Import the models and database configuration
+from core.config import settings
+from core.database import Base
+
+# Import all models to ensure they're registered with Base
+from models.user import User
+from models.rfp import RFP, RFPDocument
+from models.proposal import Proposal, ProposalDocument
+from models.project import Project
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Override sqlalchemy.url with our settings
+# Set the database URL from settings
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -27,13 +34,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# Import all models to ensure they're registered with Base
-from app.models import (
-    User, Organization, RFP, RFPDocument, 
-    Proposal, ProposalDocument, Workflow, 
-    WorkflowNode, WorkflowExecution, Agent, AgentExecution
-)
-
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
