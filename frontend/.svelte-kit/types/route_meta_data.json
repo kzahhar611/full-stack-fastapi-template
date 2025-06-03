@@ -4,5 +4,7 @@
 	"/": [],
 	"/(app)/dashboard": [],
 	"/(auth)/login": [],
-	"/(app)/rfps": []
+	"/(app)/rfps": [],
+	"/(app)/rfps/[id]": [],
+	"/(app)/rfps/[id]/documents": []
 }
