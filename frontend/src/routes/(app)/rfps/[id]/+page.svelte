@@ -518,7 +518,12 @@
 	:global(.prose ul) { @apply list-disc list-inside text-gray-300 mb-3; }
 	:global(.prose ol) { @apply list-decimal list-inside text-gray-300 mb-3; }
 	:global(.prose li) { @apply mb-1; }
-	:global(.prose a) { @apply text-blue-400 hover:text-blue-300; }
+	:global(.prose a) { 
+		@apply text-blue-400; 
+	}
+	:global(.prose a:hover) { 
+		@apply text-blue-300; 
+	}
 	:global(.prose strong) { @apply font-semibold text-white; }
 	:global(.prose em) { @apply italic; }
 	:global(.prose blockquote) { @apply border-l-4 border-gray-600 pl-4 italic text-gray-400; }
