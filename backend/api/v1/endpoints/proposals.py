@@ -4,7 +4,9 @@ TenderWise AI - Proposals Endpoints
 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+import os
 
 from core.database import get_db
 from auth.dependencies import get_current_active_user
@@ -24,6 +26,7 @@ from schemas.proposal import (
 )
 from services.proposal_service import ProposalService
 from services.file_service import FileService
+from services.ai_evaluation_service import AIEvaluationService
 
 router = APIRouter()
 
@@ -307,6 +310,50 @@ async def delete_proposal_document(
     return {"message": "Document deleted successfully"}
 
 
+@router.get("/{proposal_id}/documents/{document_id}/download")
+async def download_proposal_document(
+    proposal_id: int,
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Download a proposal document"""
+    proposal = ProposalService.get_proposal_by_id(db, proposal_id)
+    if not proposal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Proposal not found"
+        )
+    
+    # Check permissions
+    if not current_user.is_superuser and proposal.created_by != current_user.id:
+        if proposal.status != ProposalStatus.SUBMITTED:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to download documents for this proposal"
+            )
+    
+    document = FileService.get_proposal_document_by_id(db, proposal_id, document_id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found"
+        )
+    
+    file_path = os.path.join("uploads", "proposals", document.file_path)
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found on disk"
+        )
+    
+    return FileResponse(
+        path=file_path,
+        filename=document.original_filename,
+        media_type=document.content_type
+    )
+
+
 @router.post("/{proposal_id}/evaluate", response_model=ProposalEvaluationResponse)
 async def evaluate_proposal(
     proposal_id: int,
@@ -329,32 +376,41 @@ async def evaluate_proposal(
             detail="Not authorized to evaluate proposals"
         )
     
-    # TODO: Implement actual AI evaluation
-    # For now, return mock evaluation
-    from datetime import datetime
+    # Get the related RFP for context
+    rfp = db.query(RFP).filter(RFP.id == proposal.rfp_id).first()
+    if not rfp:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Related RFP not found"
+        )
     
-    evaluation = ProposalEvaluationResponse(
+    # Initialize AI evaluation service
+    ai_service = AIEvaluationService()
+    
+    # Perform AI evaluation
+    evaluation = ai_service.evaluate_proposal(
+        db=db,
+        proposal=proposal,
+        rfp=rfp,
+        evaluation_request=evaluation_request
+    )
+    
+    # Update proposal with evaluation results
+    ProposalService.update_evaluation_results(
+        db=db,
         proposal_id=proposal_id,
-        overall_score=85.5,
-        technical_score=88.0 if evaluation_request.evaluate_technical else None,
-        financial_score=82.0 if evaluation_request.evaluate_financial else None,
-        compliance_score=87.0 if evaluation_request.evaluate_compliance else None,
-        strengths=[
-            "Strong technical approach",
-            "Competitive pricing",
-            "Proven track record"
-        ],
-        weaknesses=[
-            "Timeline might be aggressive",
-            "Some compliance requirements need clarification"
-        ],
-        risk_factors=[
-            "Delivery timeline risk",
-            "Resource allocation concerns"
-        ],
-        recommendation="ACCEPT",
-        evaluation_summary="This proposal demonstrates strong technical capabilities with competitive pricing. While there are some timeline concerns, the overall quality and approach make it a strong candidate for selection.",
-        created_at=datetime.utcnow()
+        evaluation_results={
+            "overall_score": evaluation.overall_score,
+            "technical_score": evaluation.technical_score,
+            "financial_score": evaluation.financial_score,
+            "compliance_score": evaluation.compliance_score,
+            "evaluated_at": evaluation.created_at.isoformat()
+        },
+        strengths=evaluation.strengths,
+        weaknesses=evaluation.weaknesses,
+        risk_factors=evaluation.risk_factors,
+        recommendation=evaluation.recommendation,
+        compliance_score=evaluation.compliance_score
     )
     
     return evaluation

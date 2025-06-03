@@ -248,3 +248,11 @@ class FileService:
     def get_proposal_document_by_id(db: Session, document_id: int) -> Optional[ProposalDocument]:
         """Get proposal document by ID"""
         return db.query(ProposalDocument).filter(ProposalDocument.id == document_id).first()
+
+    @staticmethod
+    def get_proposal_document_by_id(db: Session, proposal_id: int, document_id: int) -> Optional[ProposalDocument]:
+        """Get proposal document by ID with proposal ID validation"""
+        return db.query(ProposalDocument).filter(
+            ProposalDocument.id == document_id,
+            ProposalDocument.proposal_id == proposal_id
+        ).first()

@@ -288,3 +288,39 @@ class ProposalService:
         }
         
         return new_status in valid_transitions.get(current_status, [])
+    
+    @staticmethod
+    def update_evaluation_results(
+        db: Session,
+        proposal_id: int,
+        evaluation_results: dict,
+        strengths: List[str],
+        weaknesses: List[str],
+        risk_factors: List[str],
+        recommendation: str,
+        compliance_score: Optional[float] = None
+    ) -> Proposal:
+        """Update proposal with AI evaluation results"""
+        proposal = ProposalService.get_proposal_by_id(db, proposal_id)
+        if not proposal:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Proposal not found"
+            )
+        
+        # Update evaluation fields
+        proposal.evaluation_results = evaluation_results
+        proposal.strengths = strengths
+        proposal.weaknesses = weaknesses
+        proposal.risk_factors = risk_factors
+        proposal.recommendation = recommendation
+        
+        if compliance_score is not None:
+            proposal.compliance_score = compliance_score
+        
+        proposal.updated_at = datetime.utcnow()
+        
+        db.commit()
+        db.refresh(proposal)
+        
+        return proposal
