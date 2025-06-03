@@ -1,0 +1,8 @@
+{
+	"/(auth)": [],
+	"/(app)": [],
+	"/": [],
+	"/(app)/dashboard": [],
+	"/(auth)/login": [],
+	"/(app)/rfps": []
+}
