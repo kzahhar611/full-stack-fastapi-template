@@ -2,7 +2,20 @@
 
 ## Project Description
 
-TenderWise AI is a comprehensive, Agentic AI-powered platform designed to revolutionize the Request for Proposal (RFP) and tendering process. The system leverages Cloud AI APIs and Agentic AI to provide intelligent analysis, comparison, and generation of tender-related documents, alongside robust project and system management features.
+**TenderWise AI** is a comprehensive enterprise-grade AI platform designed to revolutionize the Request for Proposal (RFP) and tendering process through advanced AI agent orchestration, visual workflow design, and multi-tenant architecture. 
+
+The platform combines:
+- **Visual AI Workflow Designer** (like Langflow) for creating custom AI agents and workflows
+- **Advanced Template Designer** for PDF/PowerPoint generation with AI content injection
+- **Multi-tenant Enterprise Architecture** with complete data isolation and RBAC
+- **Multi-LLM Support** with cost tracking and usage management
+- **Document Processing Pipeline** with OCR, analysis, and smart categorization
+- **Internationalization** supporting Arabic/English with RTL/LTR and Hijri/Gregorian calendars
+
+**Scope**: Full enterprise platform comparable to Salesforce + Langflow + Power Platform  
+**Duration**: 18-24 months development  
+**Team**: 8-12 developers  
+**Investment**: $2-4M total development cost
 
 ## Reference Repositories
 
