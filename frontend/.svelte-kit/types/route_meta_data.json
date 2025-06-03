@@ -6,5 +6,7 @@
 	"/(auth)/login": [],
 	"/(app)/rfps": [],
 	"/(app)/rfps/[id]": [],
-	"/(app)/rfps/[id]/documents": []
+	"/(app)/rfps/[id]/documents": [],
+	"/simple-login": [],
+	"/test": []
 }

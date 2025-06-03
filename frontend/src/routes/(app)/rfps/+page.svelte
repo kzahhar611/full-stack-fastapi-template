@@ -181,12 +181,7 @@
 		loadData(); // Refresh data to get updated statistics
 	}
 	
-	function getDaysUntilDeadline(deadline: string): number {
-		const deadlineDate = new Date(deadline);
-		const today = new Date();
-		const diffTime = deadlineDate.getTime() - today.getTime();
-		return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-	}
+
 	
 	async function deleteRFP(rfpId: number) {
 		if (!confirm('Are you sure you want to delete this RFP?')) return;

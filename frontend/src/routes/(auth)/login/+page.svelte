@@ -98,16 +98,29 @@
 				Password
 			</label>
 			<div class="relative">
-				<input
-					id="password"
-					type={showPassword ? 'text' : 'password'}
-					bind:value={password}
-					on:keypress={handleKeyPress}
-					class="input pr-10"
-					placeholder="Enter your password"
-					required
-					disabled={isLoading}
-				/>
+				{#if showPassword}
+					<input
+						id="password"
+						type="text"
+						bind:value={password}
+						on:keypress={handleKeyPress}
+						class="input pr-10"
+						placeholder="Enter your password"
+						required
+						disabled={isLoading}
+					/>
+				{:else}
+					<input
+						id="password"
+						type="password"
+						bind:value={password}
+						on:keypress={handleKeyPress}
+						class="input pr-10"
+						placeholder="Enter your password"
+						required
+						disabled={isLoading}
+					/>
+				{/if}
 				<button
 					type="button"
 					on:click={togglePasswordVisibility}

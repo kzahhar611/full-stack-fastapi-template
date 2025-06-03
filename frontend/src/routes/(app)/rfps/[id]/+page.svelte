@@ -6,8 +6,8 @@
 	import { fade } from 'svelte/transition';
 	import { authStore } from '$lib/stores/auth';
 	import type { RFPEnhanced } from '$lib/types/rfp';
-	import AIChatInterface from '$lib/components/ai/AIChatInterface.svelte';
-	import AIInsights from '$lib/components/ai/AIInsights.svelte';
+	// import AIChatInterface from '$lib/components/ai/AIChatInterface.svelte';
+	// import AIInsights from '$lib/components/ai/AIInsights.svelte';
 
 	let rfpId: number;
 	let rfp: RFPEnhanced | null = null;
@@ -423,26 +423,15 @@
 				</div>
 
 			{:else if activeTab === 'ai'}
-				<div class="grid grid-cols-1 lg:grid-cols-2 gap-8" transition:fade={{ duration: 300 }}>
-					<!-- AI Insights -->
-					<div>
-						<AIInsights 
-							rfpId={rfpId} 
-							showUsageStats={$authStore.user?.role && ['super_admin', 'admin'].includes($authStore.user.role)}
-						/>
-					</div>
-
-					<!-- AI Chat -->
-					<div class="bg-gray-900 rounded-lg border border-gray-700 h-[600px]">
-						<AIChatInterface 
-							rfpId={rfpId}
-							context={{
-								rfp_title: rfp.title,
-								rfp_status: rfp.status,
-								rfp_category: rfp.category
-							}}
-							placeholder="Ask me about this RFP..."
-						/>
+				<div class="bg-gray-900 rounded-lg border border-gray-700 p-6" transition:fade={{ duration: 300 }}>
+					<div class="text-center py-12">
+						<div class="text-4xl mb-4">🤖</div>
+						<h3 class="text-lg font-semibold text-white mb-2">AI Assistant</h3>
+						<p class="text-gray-400 mb-4">AI features are available via the API</p>
+						<div class="text-sm text-gray-500">
+							<p>AI Status: Active with OpenAI and Anthropic</p>
+							<p>Try the API endpoints at <code class="bg-gray-800 px-2 py-1 rounded">/api/v1/ai/</code></p>
+						</div>
 					</div>
 				</div>
 
