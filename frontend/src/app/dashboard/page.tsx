@@ -13,7 +13,9 @@ import {
   FolderIcon,
   ChartBarIcon,
   PlusIcon,
-  EyeIcon
+  EyeIcon,
+  CurrencyDollarIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 
@@ -31,34 +33,47 @@ const DashboardPage: React.FC = () => {
     }
   )
 
+  // Calculate stats from actual data
+  const draftRFPs = rfps?.filter(rfp => rfp.status === 'draft').length || 0
+  const publishedRFPs = rfps?.filter(rfp => rfp.status === 'published').length || 0
+  const totalBudget = rfps?.reduce((sum, rfp) => sum + (rfp.estimated_budget || 0), 0) || 0
+
   const stats = [
     {
       name: 'Total RFPs',
       value: rfps?.length || 0,
       icon: DocumentTextIcon,
       color: 'bg-blue-500',
-      href: '/rfps'
+      href: '/rfps',
+      subtitle: `${draftRFPs} draft, ${publishedRFPs} published`
     },
     {
-      name: 'Active Proposals',
-      value: '0',
-      icon: ClipboardDocumentListIcon,
+      name: 'Total Budget',
+      value: totalBudget > 0 ? `$${totalBudget.toLocaleString()}` : '$0',
+      icon: CurrencyDollarIcon,
       color: 'bg-green-500',
-      href: '/proposals'
+      href: '/rfps',
+      subtitle: 'Estimated total value'
     },
     {
-      name: 'Projects',
-      value: '0',
-      icon: FolderIcon,
+      name: 'This Month',
+      value: rfps?.filter(rfp => {
+        const created = new Date(rfp.created_at)
+        const now = new Date()
+        return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear()
+      }).length || 0,
+      icon: CalendarIcon,
       color: 'bg-yellow-500',
-      href: '/projects'
+      href: '/rfps',
+      subtitle: 'RFPs created this month'
     },
     {
-      name: 'Analytics',
-      value: '0',
+      name: 'Active Status',
+      value: publishedRFPs,
       icon: ChartBarIcon,
       color: 'bg-purple-500',
-      href: '/analytics'
+      href: '/analytics',
+      subtitle: 'Currently open for bids'
     }
   ]
 
@@ -124,6 +139,11 @@ const DashboardPage: React.FC = () => {
                       <dd className="text-lg font-medium text-gray-900">
                         {stat.value}
                       </dd>
+                      {stat.subtitle && (
+                        <dd className="text-xs text-gray-500 mt-1">
+                          {stat.subtitle}
+                        </dd>
+                      )}
                     </dl>
                   </div>
                 </div>
