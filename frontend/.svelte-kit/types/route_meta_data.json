@@ -2,11 +2,14 @@
 	"/(auth)": [],
 	"/(app)": [],
 	"/": [],
+	"/(app)/analytics": [],
+	"/(app)/dashboard-simple": [],
 	"/(app)/dashboard": [],
 	"/(auth)/login": [],
 	"/(app)/rfps": [],
 	"/(app)/rfps/[id]": [],
 	"/(app)/rfps/[id]/documents": [],
 	"/simple-login": [],
-	"/test": []
+	"/test": [],
+	"/(app)/users": []
 }

@@ -16,6 +16,9 @@ from .rfp_templates import router as rfp_templates_router
 # Release 7: AI Services
 from .ai_services import router as ai_services_router
 
+# Release 8: Analytics (temporarily disabled due to table conflicts)
+# from .analytics_simple import router as analytics_router
+
 api_router = APIRouter()
 
 # Include original authentication and basic routes (backward compatibility)
@@ -30,6 +33,9 @@ api_router.include_router(rfp_templates_router, prefix="/rfp-templates", tags=["
 
 # Release 7: AI Services endpoints
 api_router.include_router(ai_services_router, prefix="/ai", tags=["ai-services"])
+
+# Release 8: Analytics endpoints (temporarily disabled)
+# api_router.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
 
 # TODO: Add other routers for future releases
 # api_router.include_router(users_router, prefix="/users", tags=["users"])

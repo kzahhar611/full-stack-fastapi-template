@@ -14,7 +14,7 @@
 	onMount(() => {
 		const unsubscribe = authStore.subscribe((auth) => {
 			if (!auth.isAuthenticated) {
-				goto('/auth/login');
+				goto('/login');
 			}
 		});
 		
