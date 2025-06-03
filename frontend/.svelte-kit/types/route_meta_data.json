@@ -6,10 +6,12 @@
 	"/(app)/dashboard-simple": [],
 	"/(app)/dashboard": [],
 	"/(auth)/login": [],
+	"/(app)/organizations": [],
 	"/(app)/rfps": [],
 	"/(app)/rfps/[id]": [],
 	"/(app)/rfps/[id]/documents": [],
 	"/simple-login": [],
 	"/test": [],
-	"/(app)/users": []
+	"/(app)/users": [],
+	"/(app)/workflows": []
 }

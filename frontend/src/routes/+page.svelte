@@ -31,7 +31,7 @@
 			
 			<div class="flex items-center gap-4">
 				<a 
-					href="/auth/login" 
+					href="/login" 
 					class="btn-primary"
 				>
 					Sign In
@@ -54,7 +54,7 @@
 			</p>
 			
 			<div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-				<a href="/auth/login" class="btn-primary flex items-center gap-2 px-8 py-4 text-lg">
+				<a href="/login" class="btn-primary flex items-center gap-2 px-8 py-4 text-lg">
 					Get Started
 					<ArrowRight size={20} />
 				</a>
@@ -155,7 +155,7 @@
 				their RFP and tendering operations.
 			</p>
 			
-			<a href="/auth/login" class="btn-primary flex items-center gap-2 px-8 py-4 text-lg mx-auto w-fit">
+			<a href="/login" class="btn-primary flex items-center gap-2 px-8 py-4 text-lg mx-auto w-fit">
 				Start Your Journey
 				<ArrowRight size={20} />
 			</a>
