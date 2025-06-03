@@ -47,7 +47,11 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
-        return f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}@{values.get('POSTGRES_SERVER')}:{values.get('POSTGRES_PORT')}/{values.get('POSTGRES_DB')}"
+        # Fallback to PostgreSQL if no DATABASE_URL is set
+        if values.get('POSTGRES_SERVER'):
+            return f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}@{values.get('POSTGRES_SERVER')}:{values.get('POSTGRES_PORT')}/{values.get('POSTGRES_DB')}"
+        # Default to SQLite for development
+        return "sqlite:///./tenderwise_ai.db"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

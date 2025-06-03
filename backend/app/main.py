@@ -92,10 +92,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 async def startup_event():
     """Application startup"""
     logger.info("TenderWise AI starting up...")
-    
-    # Create database tables
-    # Base.metadata.create_all(bind=engine)
-    
+    logger.info(f"Database URL: {settings.DATABASE_URL}")
     logger.info("TenderWise AI started successfully")
 
 
