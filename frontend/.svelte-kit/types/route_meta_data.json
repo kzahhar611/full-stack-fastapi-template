@@ -5,6 +5,7 @@
 	"/(app)/analytics": [],
 	"/(app)/dashboard-simple": [],
 	"/(app)/dashboard": [],
+	"/(app)/documents": [],
 	"/(auth)/login": [],
 	"/(app)/organizations": [],
 	"/(app)/rfps": [],
