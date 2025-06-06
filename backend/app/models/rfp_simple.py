@@ -92,3 +92,6 @@ class RFP(Base):
             delta = self.submission_deadline - date.today()
             return delta.days
         return 0
+    
+    # Add relationship for RFP analyses (Module 1)
+    analyses = relationship("RFPAnalysis", back_populates="rfp", cascade="all, delete-orphan")

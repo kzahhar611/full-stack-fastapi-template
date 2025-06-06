@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFP Analysis Report - {{ rfp_title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .company-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .report-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .report-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .decision-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 6px solid {{ decision_color }};
+        }
+
+        .decision-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .decision-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: {{ decision_color }};
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .decision-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: {{ decision_color }};
+            text-transform: uppercase;
+        }
+
+        .decision-confidence {
+            font-size: 16px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .decision-summary {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .subsection-title {
+            font-size: 18px;
+            font-weight: semibold;
+            color: #374151;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .risk-category {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .risk-category h4 {
+            color: #dc2626;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .risk-item {
+            background: white;
+            border-left: 4px solid #fbbf24;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .risk-item h5 {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .risk-item .mitigation {
+            font-size: 12px;
+            color: #059669;
+            margin-top: 5px;
+        }
+
+        .risk-badges {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .badge.high { background: #fca5a5; color: #7f1d1d; }
+        .badge.medium { background: #fde047; color: #713f12; }
+        .badge.low { background: #86efac; color: #14532d; }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 8px 0;
+        }
+
+        .list-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            margin-top: 2px;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .list-icon.success { background: #10b981; }
+        .list-icon.warning { background: #f59e0b; }
+        .list-icon.info { background: #3b82f6; }
+
+        .technology-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .tech-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: medium;
+        }
+
+        .footer {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 30px;
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        @media print {
+            body { font-size: 12px; }
+            .container { padding: 20px; }
+            .header { margin-bottom: 30px; }
+            .section { margin-bottom: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-logo">TenderWise AI</div>
+            <h1 class="report-title">RFP Analysis Report</h1>
+            <div class="report-subtitle">{{ rfp_title }}</div>
+            <div class="metadata">
+                <div>Analysis ID: {{ analysis_id }}</div>
+                <div>Generated: {{ generated_at | datetime }}</div>
+                <div>Duration: {{ analysis_duration_seconds }}s</div>
+                <div>Analyst: {{ analyst_name | default("AI System") }}</div>
+            </div>
+        </div>
+
+        <!-- Executive Summary / Decision -->
+        <div class="decision-section">
+            <div class="decision-header">
+                <div class="decision-icon">
+                    {% if decision == 'go' %}✓
+                    {% elif decision == 'no_go' %}✗
+                    {% elif decision == 'conditional' %}⚠
+                    {% else %}?{% endif %}
+                </div>
+                <div>
+                    <div class="decision-title">
+                        {% if decision == 'go' %}Go Recommendation
+                        {% elif decision == 'no_go' %}No-Go Recommendation
+                        {% elif decision == 'conditional' %}Conditional Recommendation
+                        {% else %}Needs Review{% endif %}
+                    </div>
+                    <div class="decision-confidence">
+                        Confidence: {{ (confidence_score * 100) | round(0) }}% | 
+                        Win Probability: {{ (win_probability * 100) | round(0) }}%
+                    </div>
+                </div>
+            </div>
+            <div class="decision-summary">
+                {{ primary_justification }}
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">{{ (strategic_score * 100) | round(0) }}%</div>
+                <div class="metric-label">Strategic Alignment</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: {% if risk_score <= 3 %}#10b981{% elif risk_score <= 6 %}#f59e0b{% else %}#dc2626{% endif %}">
+                    {{ risk_score | round(1) }}
+                </div>
+                <div class="metric-label">Risk Score (0-10)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ estimated_duration_months }}</div>
+                <div class="metric-label">Months Duration</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ required_team_size }}</div>
+                <div class="metric-label">Team Size</div>
+            </div>
+        </div>
+
+        <!-- Detailed Reasoning -->
+        <div class="section">
+            <h2 class="section-title">Strategic Analysis</h2>
+            
+            <h3 class="subsection-title">Key Reasoning Points</h3>
+            {% for reason in detailed_reasoning %}
+            <div class="list-item">
+                <div class="list-icon info">{{ loop.index }}</div>
+                <div>{{ reason }}</div>
+            </div>
+            {% endfor %}
+
+            <h3 class="subsection-title">Success Factors</h3>
+            {% for factor in success_factors %}
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>{{ factor }}</div>
+            </div>
+            {% endfor %}
+
+            {% if conditions %}
+            <h3 class="subsection-title">Conditions for Proceeding</h3>
+            {% for condition in conditions %}
+            <div class="list-item">
+                <div class="list-icon warning">!</div>
+                <div>{{ condition }}</div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Risk Assessment -->
+        <div class="section">
+            <h2 class="section-title">Risk Assessment</h2>
+            
+            <div class="risk-grid">
+                {% if technical_risks %}
+                <div class="risk-category">
+                    <h4>Technical Risks</h4>
+                    {% for risk in technical_risks %}
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge {{ risk.probability }}">{{ risk.probability }} prob</span>
+                            <span class="badge {{ risk.impact }}">{{ risk.impact }} impact</span>
+                        </div>
+                        <h5>{{ risk.description }}</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> {{ risk.mitigation_strategy }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if commercial_risks %}
+                <div class="risk-category">
+                    <h4>Commercial Risks</h4>
+                    {% for risk in commercial_risks %}
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge {{ risk.probability }}">{{ risk.probability }} prob</span>
+                            <span class="badge {{ risk.impact }}">{{ risk.impact }} impact</span>
+                        </div>
+                        <h5>{{ risk.description }}</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> {{ risk.mitigation_strategy }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if operational_risks %}
+                <div class="risk-category">
+                    <h4>Operational Risks</h4>
+                    {% for risk in operational_risks %}
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge {{ risk.probability }}">{{ risk.probability }} prob</span>
+                            <span class="badge {{ risk.impact }}">{{ risk.impact }} impact</span>
+                        </div>
+                        <h5>{{ risk.description }}</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> {{ risk.mitigation_strategy }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if legal_risks %}
+                <div class="risk-category">
+                    <h4>Legal Risks</h4>
+                    {% for risk in legal_risks %}
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge {{ risk.probability }}">{{ risk.probability }} prob</span>
+                            <span class="badge {{ risk.impact }}">{{ risk.impact }} impact</span>
+                        </div>
+                        <h5>{{ risk.description }}</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> {{ risk.mitigation_strategy }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <h3 class="subsection-title">Risk Factors</h3>
+            {% for factor in risk_factors %}
+            <div class="list-item">
+                <div class="list-icon warning">!</div>
+                <div>{{ factor }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Project Insights -->
+        <div class="section">
+            <h2 class="section-title">Project Insights</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <h3 class="subsection-title">Project Characteristics</h3>
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+                        <p><strong>Complexity:</strong> {{ project_complexity | title }}</p>
+                        <p><strong>Duration:</strong> {{ estimated_duration_months }} months</p>
+                        <p><strong>Team Size:</strong> {{ required_team_size }} people</p>
+                        <p><strong>Budget Range:</strong> {{ estimated_cost_range.min | currency }} - {{ estimated_cost_range.max | currency }}</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subsection-title">Technology Stack</h3>
+                    <div class="technology-tags">
+                        {% for tech in technology_stack %}
+                        <span class="tech-tag">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Key Success Factors</h3>
+            {% for factor in key_success_factors %}
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>{{ factor }}</div>
+            </div>
+            {% endfor %}
+
+            <h3 class="subsection-title">Competitive Advantages</h3>
+            {% for advantage in competitive_advantages %}
+            <div class="list-item">
+                <div class="list-icon info">→</div>
+                <div>{{ advantage }}</div>
+            </div>
+            {% endfor %}
+
+            <h3 class="subsection-title">Potential Challenges</h3>
+            {% for challenge in potential_challenges %}
+            <div class="list-item">
+                <div class="list-icon warning">⚠</div>
+                <div>{{ challenge }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section">
+            <h2 class="section-title">Next Steps & Recommendations</h2>
+            
+            {% if decision == 'go' %}
+            <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #16a34a; margin-bottom: 10px;">✓ Proceed with Proposal Development</h3>
+                <p>This opportunity aligns well with your strategic objectives and capabilities.</p>
+            </div>
+            
+            <h3 class="subsection-title">Immediate Actions</h3>
+            <div class="list-item"><div class="list-icon info">1</div><div>Assemble core proposal team within 48 hours</div></div>
+            <div class="list-item"><div class="list-icon info">2</div><div>Schedule stakeholder alignment meeting</div></div>
+            <div class="list-item"><div class="list-icon info">3</div><div>Begin technical architecture planning</div></div>
+            <div class="list-item"><div class="list-icon info">4</div><div>Confirm resource availability for projected timeline</div></div>
+            <div class="list-item"><div class="list-icon info">5</div><div>Initiate preliminary client engagement</div></div>
+            
+            {% elif decision == 'conditional' %}
+            <div style="background: #fef3c7; border: 1px solid #d97706; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #d97706; margin-bottom: 10px;">⚠ Proceed with Caution</h3>
+                <p>Address the specified conditions before committing resources.</p>
+            </div>
+            
+            {% elif decision == 'no_go' %}
+            <div style="background: #fee2e2; border: 1px solid #dc2626; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #dc2626; margin-bottom: 10px;">✗ Do Not Proceed</h3>
+                <p>The risks and challenges outweigh the potential benefits.</p>
+            </div>
+            
+            <h3 class="subsection-title">Alternative Actions</h3>
+            <div class="list-item"><div class="list-icon info">•</div><div>Document lessons learned for future opportunities</div></div>
+            <div class="list-item"><div class="list-icon info">•</div><div>Consider if client relationship has other potential</div></div>
+            <div class="list-item"><div class="list-icon info">•</div><div>Focus resources on higher-probability opportunities</div></div>
+            <div class="list-item"><div class="list-icon info">•</div><div>Use analysis insights to improve capability gaps</div></div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-grid">
+                <div>
+                    <strong>Generated by:</strong><br>
+                    TenderWise AI Platform<br>
+                    Strategic Decision Support
+                </div>
+                <div>
+                    <strong>Analysis Details:</strong><br>
+                    ID: {{ analysis_id }}<br>
+                    Duration: {{ analysis_duration_seconds }}s
+                </div>
+                <div>
+                    <strong>Contact:</strong><br>
+                    {{ company_name | default("Your Organization") }}<br>
+                    {{ contact_email | default("info@yourorg.com") }}
+                </div>
+            </div>
+            <p style="margin-top: 20px; font-size: 10px;">
+                This report was generated automatically by TenderWise AI. 
+                The analysis is based on AI interpretation of the provided RFP content and should be reviewed by qualified professionals.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

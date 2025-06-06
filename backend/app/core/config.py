@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     # =============================================================================
     # APPLICATION SETTINGS
     # =============================================================================
+    PROJECT_NAME: str = Field(default="TenderWise AI", env="PROJECT_NAME")
+    VERSION: str = Field(default="1.0.0", env="VERSION")
     ENVIRONMENT: str = Field(default="development", env="ENVIRONMENT")
     DEBUG: bool = Field(default=True, env="DEBUG")
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
@@ -39,12 +41,16 @@ class Settings(BaseSettings):
         default=["http://localhost:5173", "http://localhost:3000"],
         env="CORS_ORIGINS"
     )
+    BACKEND_CORS_ORIGINS: List[str] = Field(
+        default=["http://localhost:3000", "http://localhost:3001", "http://localhost:8080"],
+        env="BACKEND_CORS_ORIGINS"
+    )
     ALLOWED_HOSTS: List[str] = Field(
         default=["localhost", "127.0.0.1"],
         env="ALLOWED_HOSTS"
     )
     
-    @field_validator("CORS_ORIGINS", mode="before")
+    @field_validator("CORS_ORIGINS", "BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
@@ -83,6 +89,10 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = Field(default="HS256", env="JWT_ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, env="REFRESH_TOKEN_EXPIRE_DAYS")
+    
+    # Initial Superuser
+    FIRST_SUPERUSER: EmailStr = Field(default="admin@tenderwise.ai", env="FIRST_SUPERUSER")
+    FIRST_SUPERUSER_PASSWORD: str = Field(default="password123", env="FIRST_SUPERUSER_PASSWORD")
     
     # OAuth2 Providers
     GOOGLE_CLIENT_ID: Optional[str] = Field(default=None, env="GOOGLE_CLIENT_ID")

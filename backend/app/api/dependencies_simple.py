@@ -67,3 +67,28 @@ async def get_current_active_user(
             detail="User account is not active"
         )
     return current_user
+
+
+async def get_user_from_token(token: str, db: Session) -> Optional[User]:
+    """
+    Get user from JWT token (for WebSocket authentication)
+    """
+    try:
+        # Verify the token
+        payload = verify_token(token)
+        if payload is None:
+            return None
+            
+        user_id: int = payload.get("sub")
+        if user_id is None:
+            return None
+            
+        # Get user from database
+        user = db.query(User).filter(User.id == user_id).first()
+        if user is None or not user.is_active:
+            return None
+        
+        return user
+        
+    except Exception:
+        return None

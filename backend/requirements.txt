@@ -201,3 +201,18 @@ supervisor==4.2.5
 
 # Performance
 orjson==3.9.10  # Fast JSON serialization
+
+# =============================================================================
+# MODULE 1: RFP ANALYSIS DEPENDENCIES
+# =============================================================================
+# Document extraction
+PyPDF2==3.0.1
+pypdf==3.16.0
+striprtf==0.0.26
+docx==0.2.4
+
+# Document generation (for future modules)
+weasyprint==60.0
+python-pptx==0.6.21
+jinja2==3.1.2
+markdown==3.4.4

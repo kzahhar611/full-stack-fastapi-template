@@ -69,6 +69,11 @@ class User(Base):
     # Relationships
     created_rfps: Mapped[List["RFP"]] = relationship("RFP", back_populates="creator", foreign_keys="RFP.created_by_id")
     
+    # Module 1 relationships
+    rfp_analyses: Mapped[List["RFPAnalysis"]] = relationship("RFPAnalysis", back_populates="creator")
+    decision_reviews: Mapped[List["DecisionHistory"]] = relationship("DecisionHistory", back_populates="reviewer")
+    analysis_templates: Mapped[List["AnalysisTemplate"]] = relationship("AnalysisTemplate", back_populates="creator")
+    
     def __repr__(self):
         return f"<User(email='{self.email}', role='{self.role}')>"
     

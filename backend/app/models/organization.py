@@ -87,6 +87,10 @@ class Organization(Base):
     users: Mapped[List["User"]] = relationship("User", back_populates="organization")
     rfps: Mapped[List["RFP"]] = relationship("RFP", back_populates="organization")
     
+    # Module 1 relationships
+    rfp_analyses: Mapped[List["RFPAnalysis"]] = relationship("RFPAnalysis", back_populates="organization")
+    analysis_templates: Mapped[List["AnalysisTemplate"]] = relationship("AnalysisTemplate", back_populates="organization")
+    
     def __repr__(self):
         return f"<Organization(name='{self.name}', slug='{self.slug}')>"
 

@@ -16,8 +16,23 @@ from .rfp_templates import router as rfp_templates_router
 # Release 7: AI Services
 from .ai_services import router as ai_services_router
 
-# Release 8: Analytics (temporarily disabled due to table conflicts)
-# from .analytics_simple import router as analytics_router
+# Release 8: Analytics
+from .analytics_simple import router as analytics_router
+
+# Release 9: Advanced Analytics
+from .analytics_advanced import router as analytics_advanced_router
+from .integrations import router as integrations_router
+from .collaboration import router as collaboration_router
+from .ai_advanced import router as ai_advanced_router
+
+# Release 13: Module 1 - RFP Analysis
+from .rfp_analysis import router as rfp_analysis_router
+
+# Release 13: Document Generation Service
+from .documents import router as documents_router
+
+# Release 13: Module 2 - Compliance Analysis
+from .compliance_analysis import router as compliance_analysis_router
 
 api_router = APIRouter()
 
@@ -34,8 +49,29 @@ api_router.include_router(rfp_templates_router, prefix="/rfp-templates", tags=["
 # Release 7: AI Services endpoints
 api_router.include_router(ai_services_router, prefix="/ai", tags=["ai-services"])
 
-# Release 8: Analytics endpoints (temporarily disabled)
-# api_router.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
+# Release 8: Analytics endpoints
+api_router.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
+
+# Release 9: Advanced Analytics endpoints
+api_router.include_router(analytics_advanced_router, prefix="", tags=["advanced-analytics"])
+
+# Release 9: Third-party Integrations endpoints
+api_router.include_router(integrations_router, prefix="/integrations", tags=["integrations"])
+
+# Release 13: Module 1 - RFP Analysis endpoints
+api_router.include_router(rfp_analysis_router, prefix="/rfp-analysis", tags=["rfp-analysis"])
+
+# Release 13: Document Generation endpoints
+api_router.include_router(documents_router, prefix="/documents", tags=["documents"])
+
+# Release 13: Module 2 - Compliance Analysis endpoints
+api_router.include_router(compliance_analysis_router, prefix="/compliance-analysis", tags=["compliance-analysis"])
+
+# Release 9: Advanced Collaboration endpoints
+api_router.include_router(collaboration_router, prefix="/collaboration", tags=["collaboration"])
+
+# Release 9: Advanced AI endpoints
+api_router.include_router(ai_advanced_router, prefix="/ai-advanced", tags=["ai-advanced"])
 
 # TODO: Add other routers for future releases
 # api_router.include_router(users_router, prefix="/users", tags=["users"])

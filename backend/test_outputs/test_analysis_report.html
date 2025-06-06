@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFP Analysis Report - Test Enterprise Software Development Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .company-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .report-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .report-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .decision-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 6px solid #10b981;
+        }
+
+        .decision-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .decision-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .decision-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #10b981;
+            text-transform: uppercase;
+        }
+
+        .decision-confidence {
+            font-size: 16px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .decision-summary {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .subsection-title {
+            font-size: 18px;
+            font-weight: semibold;
+            color: #374151;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .risk-category {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .risk-category h4 {
+            color: #dc2626;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .risk-item {
+            background: white;
+            border-left: 4px solid #fbbf24;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .risk-item h5 {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .risk-item .mitigation {
+            font-size: 12px;
+            color: #059669;
+            margin-top: 5px;
+        }
+
+        .risk-badges {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .badge.high { background: #fca5a5; color: #7f1d1d; }
+        .badge.medium { background: #fde047; color: #713f12; }
+        .badge.low { background: #86efac; color: #14532d; }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 8px 0;
+        }
+
+        .list-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            margin-top: 2px;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .list-icon.success { background: #10b981; }
+        .list-icon.warning { background: #f59e0b; }
+        .list-icon.info { background: #3b82f6; }
+
+        .technology-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .tech-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: medium;
+        }
+
+        .footer {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 30px;
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        @media print {
+            body { font-size: 12px; }
+            .container { padding: 20px; }
+            .header { margin-bottom: 30px; }
+            .section { margin-bottom: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-logo">TenderWise AI</div>
+            <h1 class="report-title">RFP Analysis Report</h1>
+            <div class="report-subtitle">Test Enterprise Software Development Platform</div>
+            <div class="metadata">
+                <div>Analysis ID: test_analysis_20250103_120000</div>
+                <div>Generated: June 06, 2025</div>
+                <div>Duration: 45s</div>
+                <div>Analyst: AI System</div>
+            </div>
+        </div>
+
+        <!-- Executive Summary / Decision -->
+        <div class="decision-section">
+            <div class="decision-header">
+                <div class="decision-icon">
+                    ✓
+                    
+                </div>
+                <div>
+                    <div class="decision-title">
+                        Go Recommendation
+                        
+                    </div>
+                    <div class="decision-confidence">
+                        Confidence: 85.0% | 
+                        Win Probability: 78.0%
+                    </div>
+                </div>
+            </div>
+            <div class="decision-summary">
+                Strong strategic alignment with core capabilities and high win probability.
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">82.0%</div>
+                <div class="metric-label">Strategic Alignment</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #f59e0b">
+                    5.2
+                </div>
+                <div class="metric-label">Risk Score (0-10)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">8</div>
+                <div class="metric-label">Months Duration</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">12</div>
+                <div class="metric-label">Team Size</div>
+            </div>
+        </div>
+
+        <!-- Detailed Reasoning -->
+        <div class="section">
+            <h2 class="section-title">Strategic Analysis</h2>
+            
+            <h3 class="subsection-title">Key Reasoning Points</h3>
+            
+            <div class="list-item">
+                <div class="list-icon info">1</div>
+                <div>Excellent alignment with our AI/ML expertise</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon info">2</div>
+                <div>Client requirements match our proven capabilities</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon info">3</div>
+                <div>Competitive landscape favors our positioning</div>
+            </div>
+            
+
+            <h3 class="subsection-title">Success Factors</h3>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Proven track record in enterprise AI</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Strong technical team</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Existing vendor partnerships</div>
+            </div>
+            
+
+            
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Risk Assessment -->
+        <div class="section">
+            <h2 class="section-title">Risk Assessment</h2>
+            
+            <div class="risk-grid">
+                
+                <div class="risk-category">
+                    <h4>Technical Risks</h4>
+                    
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge medium">medium prob</span>
+                            <span class="badge high">high impact</span>
+                        </div>
+                        <h5>Integration with legacy systems</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> Develop integration layer with fallbacks</div>
+                    </div>
+                    
+                </div>
+                
+
+                
+                <div class="risk-category">
+                    <h4>Commercial Risks</h4>
+                    
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge medium">medium prob</span>
+                            <span class="badge high">high impact</span>
+                        </div>
+                        <h5>Fixed-price contract uncertainties</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> Negotiate change management provisions</div>
+                    </div>
+                    
+                </div>
+                
+
+                
+                <div class="risk-category">
+                    <h4>Operational Risks</h4>
+                    
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge high">high prob</span>
+                            <span class="badge medium">medium impact</span>
+                        </div>
+                        <h5>Resource availability during peak</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> Cross-train team and identify backups</div>
+                    </div>
+                    
+                </div>
+                
+
+                
+                <div class="risk-category">
+                    <h4>Legal Risks</h4>
+                    
+                    <div class="risk-item">
+                        <div class="risk-badges">
+                            <span class="badge low">low prob</span>
+                            <span class="badge high">high impact</span>
+                        </div>
+                        <h5>Data privacy compliance</h5>
+                        <div class="mitigation"><strong>Mitigation:</strong> Engage legal counsel and implement GDPR</div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+
+            <h3 class="subsection-title">Risk Factors</h3>
+            
+            <div class="list-item">
+                <div class="list-icon warning">!</div>
+                <div>Aggressive timeline</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon warning">!</div>
+                <div>Integration complexity</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon warning">!</div>
+                <div>Scope creep potential</div>
+            </div>
+            
+        </div>
+
+        <!-- Project Insights -->
+        <div class="section">
+            <h2 class="section-title">Project Insights</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <h3 class="subsection-title">Project Characteristics</h3>
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+                        <p><strong>Complexity:</strong> High</p>
+                        <p><strong>Duration:</strong> 8 months</p>
+                        <p><strong>Team Size:</strong> 12 people</p>
+                        <p><strong>Budget Range:</strong> $450,000.00 USD - $650,000.00 USD</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subsection-title">Technology Stack</h3>
+                    <div class="technology-tags">
+                        
+                        <span class="tech-tag">React</span>
+                        
+                        <span class="tech-tag">Node.js</span>
+                        
+                        <span class="tech-tag">Python</span>
+                        
+                        <span class="tech-tag">TensorFlow</span>
+                        
+                        <span class="tech-tag">AWS</span>
+                        
+                        <span class="tech-tag">PostgreSQL</span>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Key Success Factors</h3>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Strong project management</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Agile development methodology</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon success">✓</div>
+                <div>Continuous client engagement</div>
+            </div>
+            
+
+            <h3 class="subsection-title">Competitive Advantages</h3>
+            
+            <div class="list-item">
+                <div class="list-icon info">→</div>
+                <div>Unique AI/ML expertise</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon info">→</div>
+                <div>Proven Fortune 500 track record</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon info">→</div>
+                <div>Strong partnership ecosystem</div>
+            </div>
+            
+
+            <h3 class="subsection-title">Potential Challenges</h3>
+            
+            <div class="list-item">
+                <div class="list-icon warning">⚠</div>
+                <div>Complex integration requirements</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon warning">⚠</div>
+                <div>Tight testing timeline</div>
+            </div>
+            
+            <div class="list-item">
+                <div class="list-icon warning">⚠</div>
+                <div>Managing stakeholder expectations</div>
+            </div>
+            
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section">
+            <h2 class="section-title">Next Steps & Recommendations</h2>
+            
+            
+            <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #16a34a; margin-bottom: 10px;">✓ Proceed with Proposal Development</h3>
+                <p>This opportunity aligns well with your strategic objectives and capabilities.</p>
+            </div>
+            
+            <h3 class="subsection-title">Immediate Actions</h3>
+            <div class="list-item"><div class="list-icon info">1</div><div>Assemble core proposal team within 48 hours</div></div>
+            <div class="list-item"><div class="list-icon info">2</div><div>Schedule stakeholder alignment meeting</div></div>
+            <div class="list-item"><div class="list-icon info">3</div><div>Begin technical architecture planning</div></div>
+            <div class="list-item"><div class="list-icon info">4</div><div>Confirm resource availability for projected timeline</div></div>
+            <div class="list-item"><div class="list-icon info">5</div><div>Initiate preliminary client engagement</div></div>
+            
+            
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-grid">
+                <div>
+                    <strong>Generated by:</strong><br>
+                    TenderWise AI Platform<br>
+                    Strategic Decision Support
+                </div>
+                <div>
+                    <strong>Analysis Details:</strong><br>
+                    ID: test_analysis_20250103_120000<br>
+                    Duration: 45s
+                </div>
+                <div>
+                    <strong>Contact:</strong><br>
+                    TenderWise AI<br>
+                    test@tenderwise.ai
+                </div>
+            </div>
+            <p style="margin-top: 20px; font-size: 10px;">
+                This report was generated automatically by TenderWise AI. 
+                The analysis is based on AI interpretation of the provided RFP content and should be reviewed by qualified professionals.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

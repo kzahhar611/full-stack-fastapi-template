@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.core.database import get_db
-from ...api.dependencies import get_current_user
-from app.models.user import User
-from app.models.rfp import RFP
-from app.models.organization import Organization
-from app.services.ai.ai_config import ai_service
+from ...core.database_simple import get_db
+from ...api.dependencies_simple import get_current_user
+from ...models.user_simple import User
+from ...models.rfp_simple import RFP
+from ...models.organization import Organization
+from ...services.ai.ai_config import ai_config
 
 router = APIRouter()
 
@@ -66,7 +66,7 @@ async def get_real_time_metrics(
     try:
         # System health (check AI service status)
         try:
-            ai_status = ai_service.get_status()
+            ai_status = ai_config.get_status()
             system_health = "healthy" if ai_status.get("initialized") else "degraded"
         except:
             system_health = "degraded"
@@ -88,7 +88,7 @@ def get_ai_usage_analytics(start_date: datetime, end_date: datetime) -> Dict[str
     """Generate simplified AI usage analytics."""
     try:
         # Get current AI status and usage
-        ai_status = ai_service.get_status()
+        ai_status = ai_config.get_status()
         usage_stats = ai_status.get("usage_stats", {})
         
         # Generate daily usage data
