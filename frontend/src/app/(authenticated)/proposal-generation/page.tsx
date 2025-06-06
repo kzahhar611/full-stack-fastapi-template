@@ -82,10 +82,12 @@ export default function ProposalGenerationDashboard() {
             <FileText className="w-4 h-4 mr-2" />
             Templates
           </Button>
-          <Button size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </Button>
+          <Link href="/proposal-generation/create">
+            <Button size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              New Project
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -231,11 +233,13 @@ export default function ProposalGenerationDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2">
-                  <Plus className="w-6 h-6" />
-                  <span>Create Project</span>
-                  <span className="text-xs text-muted-foreground">Phase 3.2</span>
-                </Button>
+                <Link href="/proposal-generation/create">
+                  <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
+                    <Plus className="w-6 h-6" />
+                    <span>Create Project</span>
+                    <span className="text-xs text-green-600">Available</span>
+                  </Button>
+                </Link>
                 
                 <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2">
                   <FileText className="w-6 h-6" />

@@ -34,8 +34,8 @@ from .documents import router as documents_router
 # Release 13: Module 2 - Compliance Analysis
 from .compliance_analysis import router as compliance_analysis_router
 
-# Release 15: Module 3 - Proposal Generation (Phase 3.1 Foundation)
-from .proposal_generation_simple import router as proposal_generation_router
+# Release 16: Module 3 - Proposal Generation (Phase 3.2 Core AI Engine)
+from .proposal_generation_enhanced import router as proposal_generation_router
 
 api_router = APIRouter()
 
