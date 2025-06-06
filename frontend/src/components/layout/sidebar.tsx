@@ -18,7 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
-  Target
+  Target,
+  Lightbulb
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -48,6 +49,12 @@ const navigation = [
     href: "/compliance-analysis",
     icon: Target,
     badge: "Module 2",
+  },
+  {
+    name: "Proposal Generation",
+    href: "/proposal-generation",
+    icon: Lightbulb,
+    badge: "Module 3",
   },
   {
     name: "AI Agents",

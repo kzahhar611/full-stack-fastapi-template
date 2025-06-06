@@ -34,6 +34,9 @@ from .documents import router as documents_router
 # Release 13: Module 2 - Compliance Analysis
 from .compliance_analysis import router as compliance_analysis_router
 
+# Release 15: Module 3 - Proposal Generation (Phase 3.1 Foundation)
+from .proposal_generation_simple import router as proposal_generation_router
+
 api_router = APIRouter()
 
 # Include original authentication and basic routes (backward compatibility)
@@ -66,6 +69,9 @@ api_router.include_router(documents_router, prefix="/documents", tags=["document
 
 # Release 13: Module 2 - Compliance Analysis endpoints
 api_router.include_router(compliance_analysis_router, prefix="/compliance-analysis", tags=["compliance-analysis"])
+
+# Release 15: Module 3 - Proposal Generation endpoints
+api_router.include_router(proposal_generation_router, prefix="/proposal-generation", tags=["proposal-generation"])
 
 # Release 9: Advanced Collaboration endpoints
 api_router.include_router(collaboration_router, prefix="/collaboration", tags=["collaboration"])
